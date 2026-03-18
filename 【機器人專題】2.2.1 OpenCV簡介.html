@@ -119,6 +119,7 @@ setup.queryStudent = function (studentId) {
         return;
     }
 
+    // 改用 $.ajax 搭配 jsonp 格式
     $.ajax({
         url: setup.gasUrl,
         method: "GET",
@@ -126,7 +127,7 @@ setup.queryStudent = function (studentId) {
             action: "query",
             id: studentId
         },
-        dataType: "jsonp", // 強制使用 JSONP 模式
+        dataType: "jsonp", // 這行是解決 CORS 報錯的關鍵
         success: function (data) {
             if (data.result === "success") {
                 State.variables.StudentClass = data.class;
@@ -135,15 +136,15 @@ setup.queryStudent = function (studentId) {
                 State.variables.isLogined = true;
                 Engine.play("確認進入實驗室");
             } else {
-                alert("找不到學號：" + studentId + "\n請確認試算表中是否有此資料。");
+                alert("找不到學號：" + studentId + "，請檢查資料夾。");
             }
         },
-        error: function () {
-            alert("連線失敗！請檢查：\n1. GAS 是否部署為『所有人』且發布了『新版本』。\n2. 您的網路是否阻擋了 Google Script。");
+        error: function (xhr, status, error) {
+            console.log("Error details:", error);
+            alert("連線失敗！請確認 GAS 已部署為『所有人』並發布為『新版本』。");
         }
     });
 };
-
 setup.submitScore = function () {
     var v = State.variables;
     $.ajax({
@@ -159,7 +160,7 @@ setup.submitScore = function () {
         },
         dataType: "jsonp",
         success: function () {
-            alert("成績已成功儲存到雲端！");
+            alert("成績已上傳！");
         }
     });
 };</script><tw-passagedata pid="1" name="姓名輸入" tags="" position="675,75" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
