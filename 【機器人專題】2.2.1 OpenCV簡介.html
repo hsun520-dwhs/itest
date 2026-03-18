@@ -110,29 +110,41 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 }
 #ui-bar-history {
     display: none;
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 查詢學生函式 (保持不變)
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript">
+// 1. 請在此處填入您剛才測試成功的那串「新網址」(結尾是 /exec)
+setup.gasUrl = "https://script.google.com/macros/s/AKfycbwZuO8-9wz8ZR4B_ueaSeunuP_TdvNmIEFG16D4NiyZM5rv-9ExeQBV51eqQ55Z9kF8zg/exec";
+
+// 2. 查詢學生函式
 setup.queryStudent = function (studentId) {
     if (!studentId) {
         alert("請輸入學號");
         return;
     }
+
     $.ajax({
         url: setup.gasUrl,
         method: "GET",
-        data: { action: "query", id: studentId },
+        data: {
+            action: "query",
+            id: studentId
+        },
         dataType: "jsonp", 
         success: function (data) {
             if (data.result === "success") {
+                // 將資料存入 Twine 變數
                 State.variables.StudentClass = data.class;
                 State.variables.StudentNumber = data.no;
                 State.variables.StudentName = data.name;
                 State.variables.isLogined = true;
+                // 自動跳轉到確認頁面
                 Engine.play("確認進入實驗室");
             } else {
-                alert("找不到學號：" + studentId);
+                alert("找不到學號：" + studentId + "，請檢查試算表資料。");
             }
         },
-        error: function () { alert("連線失敗！"); }
+        error: function () {
+            alert("連線失敗！請確認網路是否穩定。");
+        }
     });
 };
 
@@ -179,6 +191,7 @@ setup.submitScore = function () {
 &lt;&lt;set $StudentName to &quot;未登錄&quot;&gt;&gt;
 &lt;&lt;set $TotalScore to 0&gt;&gt;
 &lt;&lt;set $CurrentIdx to 0&gt;&gt;
+&lt;&lt;set $AppTitle to Story.name&gt;&gt;
 
 /* 題庫資料表：OpenCV 簡介與應用 */
 &lt;&lt;set $Quiz to [
