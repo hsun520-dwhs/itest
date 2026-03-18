@@ -111,7 +111,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 #ui-bar-history {
     display: none;
 }</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 替換為您最新的 GAS 網址
-setup.gasUrl = "https://script.google.com/macros/s/AKfycbxrHBS3ElKCFAI5GCYM7gzi6zu1cLfRU8C9EMQmrbOySoPyv2IJvuiskrZW0cATHhNL/exec";
+setup.gasUrl = "https://script.google.com/a/macros/dwhs.tn.edu.tw/s/AKfycbwZuO8-9wz8ZR4B_ueaSeunuP_TdvNmIEFG16D4NiyZM5rv-9ExeQBV51eqQ55Z9kF8zg/exec";
 
 setup.queryStudent = function (studentId) {
     if (!studentId) {
@@ -119,7 +119,7 @@ setup.queryStudent = function (studentId) {
         return;
     }
 
-    // 改用 $.ajax 搭配 jsonp 格式
+    // 使用 jQuery 的 JSONP 模式，可以繞過 Failed to fetch 錯誤
     $.ajax({
         url: setup.gasUrl,
         method: "GET",
@@ -127,7 +127,7 @@ setup.queryStudent = function (studentId) {
             action: "query",
             id: studentId
         },
-        dataType: "jsonp", // 這行是解決 CORS 報錯的關鍵
+        dataType: "jsonp", // 這是修復關鍵！
         success: function (data) {
             if (data.result === "success") {
                 State.variables.StudentClass = data.class;
@@ -136,15 +136,15 @@ setup.queryStudent = function (studentId) {
                 State.variables.isLogined = true;
                 Engine.play("確認進入實驗室");
             } else {
-                alert("找不到學號：" + studentId + "，請檢查資料夾。");
+                alert("找不到學號：" + studentId + "，請確認試算表是否有該資料。");
             }
         },
-        error: function (xhr, status, error) {
-            console.log("Error details:", error);
-            alert("連線失敗！請確認 GAS 已部署為『所有人』並發布為『新版本』。");
+        error: function () {
+            alert("伺服器連線失敗！\n1. 請確認 GAS 部署是否選為「所有人」。\n2. 請確認 GAS 是否有發布「新版本」。");
         }
     });
 };
+
 setup.submitScore = function () {
     var v = State.variables;
     $.ajax({
@@ -160,7 +160,7 @@ setup.submitScore = function () {
         },
         dataType: "jsonp",
         success: function () {
-            alert("成績已上傳！");
+            alert("成績已成功上傳！");
         }
     });
 };</script><tw-passagedata pid="1" name="姓名輸入" tags="" position="675,75" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
