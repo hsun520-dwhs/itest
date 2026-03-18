@@ -110,45 +110,58 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 }
 #ui-bar-history {
     display: none;
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 設定你的 GAS 網址
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 替換為您最新的 GAS 網址
 setup.gasUrl = "https://script.google.com/macros/s/AKfycbxrHBS3ElKCFAI5GCYM7gzi6zu1cLfRU8C9EMQmrbOySoPyv2IJvuiskrZW0cATHhNL/exec";
 
-// 查詢學生函式
 setup.queryStudent = function (studentId) {
-    var url = setup.gasUrl + "?action=query&id=" + studentId;
-    
-    // 使用 fetch 抓取資料
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
+    if (!studentId) {
+        alert("請輸入學號");
+        return;
+    }
+
+    $.ajax({
+        url: setup.gasUrl,
+        method: "GET",
+        data: {
+            action: "query",
+            id: studentId
+        },
+        dataType: "jsonp", // 強制使用 JSONP 模式
+        success: function (data) {
             if (data.result === "success") {
                 State.variables.StudentClass = data.class;
                 State.variables.StudentNumber = data.no;
                 State.variables.StudentName = data.name;
                 State.variables.isLogined = true;
-                // 更新 UI 並跳轉到確認畫面
                 Engine.play("確認進入實驗室");
             } else {
-                alert("找不到此學號，請重新輸入！");
+                alert("找不到學號：" + studentId + "\n請確認試算表中是否有此資料。");
             }
-        })
-        .catch(err => alert("網路錯誤或網址設定錯誤：" + err));
+        },
+        error: function () {
+            alert("連線失敗！請檢查：\n1. GAS 是否部署為『所有人』且發布了『新版本』。\n2. 您的網路是否阻擋了 Google Script。");
+        }
+    });
 };
 
-// 上傳分數函式
 setup.submitScore = function () {
     var v = State.variables;
-    var url = setup.gasUrl + 
-              "?action=submit" +
-              "&id=" + encodeURIComponent(v.StudentID) +
-              "&class=" + encodeURIComponent(v.StudentClass) +
-              "&no=" + encodeURIComponent(v.StudentNumber) +
-              "&name=" + encodeURIComponent(v.StudentName) +
-              "&score=" + v.TotalScore;
-
-    fetch(url, { method: 'GET' }) // GAS 的 JSONP/CORS 限制下，用 GET 最穩
-        .then(() => alert("分數已成功記錄到雲端！"))
-        .catch(err => alert("上傳失敗：" + err));
+    $.ajax({
+        url: setup.gasUrl,
+        method: "GET",
+        data: {
+            action: "submit",
+            id: v.StudentID,
+            class: v.StudentClass,
+            no: v.StudentNumber,
+            name: v.StudentName,
+            score: v.TotalScore
+        },
+        dataType: "jsonp",
+        success: function () {
+            alert("成績已成功儲存到雲端！");
+        }
+    });
 };</script><tw-passagedata pid="1" name="姓名輸入" tags="" position="675,75" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
 &lt;&lt;set $CurrentIdx to 0&gt;&gt;
 &lt;&lt;set $StudentID to &quot;&quot;&gt;&gt;
