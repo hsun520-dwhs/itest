@@ -151,6 +151,8 @@ setup.queryStudent = function (studentId) {
 // 【更新】上傳分數函式：增加 title 參數
 setup.submitScore = function () {
     var v = State.variables;
+    if (!v.StudentID) { alert("尚未登入學號"); return; }
+
     $.ajax({
         url: setup.gasUrl,
         method: "GET",
@@ -160,15 +162,19 @@ setup.submitScore = function () {
             class: v.StudentClass,
             no: v.StudentNumber,
             name: v.StudentName,
-            title: v.AppTitle, // 這裡會傳送「【機器人專題】2.2.1 OpenCV簡介」
+            title: v.AppTitle, // 這裡會傳送測驗標題
             score: v.TotalScore
         },
         dataType: "jsonp",
-        success: function () {
-            alert("成績已成功上傳至雲端！\n測驗項目：" + v.AppTitle);
+        success: function (data) {
+            if (data.result === "submit_success") {
+                alert("成績已成功上傳至第二張工作表！");
+            } else {
+                alert("上傳出錯：" + data.message);
+            }
         },
         error: function() {
-            alert("上傳失敗，請檢查網路連線。");
+            alert("連線失敗，請檢查 GAS 權限設定。");
         }
     });
 };</script><tw-passagedata pid="1" name="姓名輸入" tags="" position="675,75" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
