@@ -110,24 +110,17 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 }
 #ui-bar-history {
     display: none;
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 替換為您最新的 GAS 網址
-setup.gasUrl = "https://script.google.com/a/macros/dwhs.tn.edu.tw/s/AKfycbwZuO8-9wz8ZR4B_ueaSeunuP_TdvNmIEFG16D4NiyZM5rv-9ExeQBV51eqQ55Z9kF8zg/exec";
-
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 查詢學生函式 (保持不變)
 setup.queryStudent = function (studentId) {
     if (!studentId) {
         alert("請輸入學號");
         return;
     }
-
-    // 使用 jQuery 的 JSONP 模式，可以繞過 Failed to fetch 錯誤
     $.ajax({
         url: setup.gasUrl,
         method: "GET",
-        data: {
-            action: "query",
-            id: studentId
-        },
-        dataType: "jsonp", // 這是修復關鍵！
+        data: { action: "query", id: studentId },
+        dataType: "jsonp", 
         success: function (data) {
             if (data.result === "success") {
                 State.variables.StudentClass = data.class;
@@ -136,15 +129,14 @@ setup.queryStudent = function (studentId) {
                 State.variables.isLogined = true;
                 Engine.play("確認進入實驗室");
             } else {
-                alert("找不到學號：" + studentId + "，請確認試算表是否有該資料。");
+                alert("找不到學號：" + studentId);
             }
         },
-        error: function () {
-            alert("伺服器連線失敗！\n1. 請確認 GAS 部署是否選為「所有人」。\n2. 請確認 GAS 是否有發布「新版本」。");
-        }
+        error: function () { alert("連線失敗！"); }
     });
 };
 
+// 【更新】上傳分數函式：增加 title 參數
 setup.submitScore = function () {
     var v = State.variables;
     $.ajax({
@@ -156,11 +148,15 @@ setup.submitScore = function () {
             class: v.StudentClass,
             no: v.StudentNumber,
             name: v.StudentName,
+            title: v.AppTitle, // 這裡會傳送「【機器人專題】2.2.1 OpenCV簡介」
             score: v.TotalScore
         },
         dataType: "jsonp",
         success: function () {
-            alert("成績已成功上傳！");
+            alert("成績已成功上傳至雲端！\n測驗項目：" + v.AppTitle);
+        },
+        error: function() {
+            alert("上傳失敗，請檢查網路連線。");
         }
     });
 };</script><tw-passagedata pid="1" name="姓名輸入" tags="" position="675,75" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
@@ -246,28 +242,44 @@ setup.submitScore = function () {
         success: &quot;通關成功！OpenCV 將無意義的像素翻譯成電腦能理解的資訊（如：這是一顆腫瘤、這是一條車道線）。&quot;,
         wrong: &quot;差一點就滿分了！OpenCV 的重點在於「解析」影像，它是將視覺訊號轉化為決策依據的橋樑。&quot;
     }
-]&gt;&gt;</tw-passagedata><tw-passagedata pid="3" name="成績單" tags="" position="875,325" size="100,100">! 🎓 &lt;&lt;print Story.name&gt;&gt; · 考核報告
+]&gt;&gt;</tw-passagedata><tw-passagedata pid="3" name="成績單" tags="" position="875,325" size="100,100">! 🤖 $AppTitle · 測驗結果
 &lt;hr style=&quot;margin-top:0; margin-bottom:10px;&quot;&gt;\
-!!!姓名： @@#ffffff;$StudentName@@
-!!!得分： @@#ffd700; $TotalScore@@ / 100
-!!📝 等級
+!!! 學生姓名：@@#ffffff;$StudentName@@
+!!! 測驗得分：@@#ffd700;$TotalScore@@ / 100
+
+!! 📝 詳細資訊
+* **學號**：$StudentID
+* **班級**：$StudentClass
+* **座號**：$StudentNumber
+
+!! 📊 成績評等
 &lt;&lt;nobr&gt;&gt;
 &lt;&lt;if $TotalScore &gt;= 90&gt;&gt;
-    🌟卓越 (Distinction)：&lt;br&gt;
-    太棒了！你對本單元的核心觀念掌握得極其精確。你已經具備了將這些技術應用到實際場景的紮實實力！
+    🌟 @@#00ff00;卓越 (Distinction)@@：&lt;br&gt;
+    太棒了！你對本單元的核心觀念掌握得極其精確。
 &lt;&lt;elseif $TotalScore &gt;= 60&gt;&gt;
-    👍 合格 (Pass)：&lt;br&gt;
-    表現不錯！基礎觀念正確，已經了解本單元的核心內容。如果想追求卓越，建議可以針對錯題的部分再回頭複習影片。
+    👍 @@#ffff00;合格 (Pass)@@：&lt;br&gt;
+    表現不錯！基礎觀念正確，已經了解本單元的核心內容。
 &lt;&lt;else&gt;&gt;
-    ⚠️ 需補測 (Retake)：&lt;br&gt;
-    目前的得分顯示對單元的運作邏輯尚未完全建立。別灰心！建議重新觀看教學影片，重點關注那些容易混淆的關鍵判斷標準。
+    ⚠️ @@#ff0000;需補測 (Retake)@@：&lt;br&gt;
+    目前的得分顯示對單元的運作邏輯尚未完全建立。建議重新觀看教學影片並再次挑戰。
 &lt;&lt;/if&gt;&gt;
 &lt;&lt;/nobr&gt;&gt;
+
 &lt;hr style=&quot;margin-top:10px; margin-bottom:10px;&quot;&gt;\
-!!📸 截圖說明：
-請同學務必在此畫面**進行截圖**（需包含班級、座號、姓名與得分），並將截圖上傳至google classroom。
-[[保留姓名，重新挑戰|Start]]
-[[更換姓名，完全重置|姓名輸入]]</tw-passagedata><tw-passagedata pid="4" name="Start" tags="" position="675,250" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
+!! ☁️ 雲端記錄
+請務必點擊下方按鈕，將成績回傳至老師的試算表：
+
+&lt;&lt;button &quot;點我：傳送分數到雲端記錄&quot;&gt;&gt;
+	&lt;&lt;run setup.submitScore()&gt;&gt;
+&lt;&lt;/button&gt;&gt;
+
+&lt;hr&gt;
+!! 📸 截圖說明
+請同學務必在此畫面**進行截圖**（需包含學號、姓名與得分），並將截圖上傳至 Google Classroom 備查。
+
+[[保留身分，重新挑戰|Start]]
+[[更換學號，完全重置|姓名輸入]]</tw-passagedata><tw-passagedata pid="4" name="Start" tags="" position="675,250" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
 &lt;&lt;set $CurrentIdx to 0&gt;&gt;  /* 核心修正：重置進度 */
 &lt;&lt;set $myRobot to null&gt;&gt;
 &lt;&lt;run UI.update()&gt;&gt;
