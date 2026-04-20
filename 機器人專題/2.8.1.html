@@ -116,8 +116,7 @@ button:disabled {
 }		
 #ui-bar-history {
     display: none;
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript">
-// 1. 請在此處填入您剛才測試成功的那串「新網址」(結尾是 /exec)
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript">// 1. 請在此處填入 GAS 網址
 setup.gasUrl = "https://script.google.com/macros/s/AKfycbwZuO8-9wz8ZR4B_ueaSeunuP_TdvNmIEFG16D4NiyZM5rv-9ExeQBV51eqQ55Z9kF8zg/exec";
 
 // 2. 查詢學生函式
@@ -137,12 +136,10 @@ setup.queryStudent = function (studentId) {
         dataType: "jsonp", 
         success: function (data) {
             if (data.result === "success") {
-                // 將資料存入 Twine 變數
                 State.variables.StudentClass = data.class;
                 State.variables.StudentNumber = data.no;
                 State.variables.StudentName = data.name;
                 State.variables.isLogined = true;
-                // 自動跳轉到確認頁面
                 Engine.play("確認進入實驗室");
             } else {
                 alert("找不到學號：" + studentId + "，請檢查試算表資料。");
@@ -154,20 +151,17 @@ setup.queryStudent = function (studentId) {
     });
 };
 
-// 【更新】上傳分數函式：增加防止重複點擊機制
+// 3. 上傳分數函式
 setup.submitScore = function () {
     var v = State.variables;
     if (!v.StudentID) { alert("尚未登入學號"); return; }
 
-    // 1. 抓取按鈕元素 (透過 jQuery 尋找包含特定文字的按鈕)
     var $btn = $(".macro-button:contains('傳送分數')");
     
-    // 如果按鈕已經被停用，就直接跳出，不再執行
     if ($btn.prop("disabled")) {
         return;
     }
 
-    // 2. 立即停用按鈕並更改文字
     $btn.prop("disabled", true).text("⏳ 處理中，請稍候...");
 
     $.ajax({
@@ -185,22 +179,18 @@ setup.submitScore = function () {
         dataType: "jsonp",
         success: function (data) {
             if (data.result === "submit_success") {
-                // 3. 成功後顯示打勾，不再恢復按鈕功能
                 $btn.text("✅ 成績已成功傳送");
                 alert("成績已成功上傳！請勿重複點擊。");
             } else {
-                // 如果後端回傳錯誤，恢復按鈕讓使用者重試
                 $btn.prop("disabled", false).text("點我：傳送分數到雲端記錄");
                 alert("上傳出錯：" + data.message);
             }
         },
         error: function() {
-            // 連線失敗也恢復按鈕
             $btn.prop("disabled", false).text("點我：傳送分數到雲端記錄");
             alert("連線失敗，請檢查網路或 GAS 權限設定。");
         }
     });
-};
 };</script><tw-passagedata pid="1" name="姓名輸入" tags="" position="675,75" size="100,100">&lt;&lt;set $TotalScore to 0&gt;&gt;
 &lt;&lt;set $CurrentIdx to 0&gt;&gt;
 &lt;&lt;set $StudentID to &quot;&quot;&gt;&gt;
