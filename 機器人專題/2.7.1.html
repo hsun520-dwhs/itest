@@ -222,41 +222,117 @@ setup.submitScore = function () {
 /* 將標題動態替換為與新影片相符的名稱 */
 &lt;&lt;set $AppTitle to &quot;2.7.1 影像品質與檔案大小的權衡實作說明&quot;&gt;&gt;
 
-/* 2. 完整題庫池 (10 題，針對2.7.1 影像品質與檔案大小的權衡實作說明，避開既有題目) */
+/* 完整題庫池 (共 10 題，針對 2.7.1 實作單元設計) */
 &lt;&lt;set $MasterQuizPool to [
     {
-        title: &quot;影像壓縮的兩種門派&quot;,
-        q: &quot;節目中為了讓大家秒懂壓縮原理，將「無損壓縮」比喻成什麼樣的角色？&quot;,
+        title: &quot;影像處理的平衡藝術&quot;,
+        q: &quot;在機器視覺實作中，提到「權衡 (Trade-off)」通常是指哪兩者之間的平衡？&quot;,
         options: [
-            { text: &quot;收納達人（不丟東西，但打包得很好，解開後完美還原）&quot;, isCorrect: true },
-            { text: &quot;斷捨離大師（直接丟掉不重要的東西）&quot;, isCorrect: false },
-            { text: &quot;魔術師（無中生有變出空間）&quot;, isCorrect: false }
+            { text: &quot;馬達轉速與相機光圈&quot;, isCorrect: false },
+            { text: &quot;影像細節與儲存/傳輸成本&quot;, isCorrect: true },
+            { text: &quot;圖片長度與圖片寬度&quot;, isCorrect: false }
         ],
-        success: &quot;完全正確！無損壓縮就像收納達人，用高明的方法打包所有資訊，確保解壓縮後「一點都沒少」。&quot;,
-        wrong: &quot;答錯囉。無損壓縮的特色是「完美還原」，所以節目將其比喻為不丟東西的「收納達人」。&quot;
+        success: &quot;正確！我們必須在保有足夠細節與縮小檔案體積之間取得平衡。&quot;,
+        wrong: &quot;不對喔。核心概念是在「影像細節」與「檔案大小」之間做取捨。&quot;
     },
     {
-        title: &quot;斷捨離的代價&quot;,
-        q: &quot;承上題，被比喻為「斷捨離」的「有損壓縮（如 JPG）」，當它把資料丟掉以換取極小的檔案空間後，解壓縮時還能變回原本一模一樣的狀態嗎？&quot;,
+        title: &quot;JPEG 的壓縮本質&quot;,
+        q: &quot;為什麼 JPEG 被稱為「失真壓縮 (Lossy Compression)」？&quot;,
         options: [
-            { text: &quot;不能，被捨棄的細節（如細微顏色差異）永遠消失了&quot;, isCorrect: true },
-            { text: &quot;可以，電腦會透過 AI 自動補回一模一樣的細節&quot;, isCorrect: false },
-            { text: &quot;可以，只要給電腦夠長的時間運算就能復原&quot;, isCorrect: false }
+            { text: &quot;因為它會永久捨棄人眼不敏感的色彩細節來換取空間&quot;, isCorrect: true },
+            { text: &quot;因為它存檔後圖片會自動旋轉&quot;, isCorrect: false },
+            { text: &quot;因為它只能儲存黑白的影像資訊&quot;, isCorrect: false }
         ],
-        success: &quot;沒錯！有損壓縮是不可逆的「破壞性壓縮」，丟掉的資訊就像潑出去的水，再也回不來了。&quot;,
-        wrong: &quot;再想想，既然叫「有損（Lossy）」且比喻為斷捨離，丟進垃圾桶的東西當然是找不回來的。&quot;
+        success: &quot;沒錯！JPEG 透過捨棄細節來達到極高的壓縮比，這是不可逆的。&quot;,
+        wrong: &quot;猜錯囉。JPEG 是透過永久丟棄部分色彩資訊來大幅縮小檔案體積。&quot;
     },
     {
-        title: &quot;畫面的破壞者&quot;,
-        q: &quot;如果我們在程式中將 JPG 的品質參數（Quality）設定為超低的「10」，畫面上最明顯會出現什麼瑕疵？&quot;,
+        title: &quot;PNG 的核心價值&quot;,
+        q: &quot;在精密量測（如工業零件檢測）中，為何專家建議優先使用 PNG 格式？&quot;,
         options: [
-            { text: &quot;出現一塊一塊明顯的色塊與馬賽克感（壓縮失真）&quot;, isCorrect: true },
-            { text: &quot;圖片會自動變成黑白灰階&quot;, isCorrect: false },
-            { text: &quot;圖片的尺寸（長寬）會自動縮水成原本的十分之一&quot;, isCorrect: false }
+            { text: &quot;因為 PNG 的檔案體積通常比 JPG 小得多&quot;, isCorrect: false },
+            { text: &quot;因為 PNG 具有「無損壓縮」特性，能還原每一像素的原始資訊&quot;, isCorrect: true },
+            { text: &quot;因為 PNG 會自動修正對焦錯誤&quot;, isCorrect: false }
         ],
-        success: &quot;答對了！過度壓縮會導致細節被大量抹除，相近的顏色會被強行合併，產生難看的「馬賽克方塊」。&quot;,
-        success: &quot;觀念非常清楚！JPG 適合平滑過渡的照片，而 PNG 則能完美保留 Logo 銳利的邊緣和透明背景。&quot;,
-        wrong: &quot;再想想。JPG 最適合色彩漸層豐富的「照片」，而 PNG 則適合需要邊緣清晰、甚至有透明背景的「Logo 或圖示」。&quot;
+        success: &quot;完全正確！對於需要精確像素資料的 AI 辨識，PNG 是更好的選擇。&quot;,
+        wrong: &quot;再想想。PNG 的價值在於「無損」，能完美保留所有像素細節。&quot;
+    },
+    {
+        title: &quot;視覺瑕疵辨識&quot;,
+        q: &quot;當 JPEG 的品質參數 (Quality) 設定過低時，畫面上出現的方塊狀模糊通常稱為什麼？&quot;,
+        options: [
+            { text: &quot;壓縮失真 (Artifacts) 或馬賽克感&quot;, isCorrect: true },
+            { text: &quot;鏡頭入塵&quot;, isCorrect: false },
+            { text: &quot;動態模糊&quot;, isCorrect: false }
+        ],
+        success: &quot;對的！過度壓縮會導致邊緣出現難看的方塊狀失真。&quot;,
+        wrong: &quot;不對喔。那是因為捨棄過多資訊後產生的「壓縮失真」。&quot;
+    },
+    {
+        title: &quot;OpenCV 參數傳遞&quot;,
+        q: &quot;在 OpenCV 程式中，使用 `cv2.imwrite()` 設定壓縮品質時，參數應該寫在哪裡？&quot;,
+        options: [
+            { text: &quot;寫在圖片檔名的後綴後面&quot;, isCorrect: false },
+            { text: &quot;寫在第三個參數，並以列表 (List) 的形式傳遞&quot;, isCorrect: true },
+            { text: &quot;寫在程式碼最上方的註解區&quot;, isCorrect: false }
+        ],
+        success: &quot;專業！例如 `[cv2.IMWRITE_JPEG_QUALITY, 10]` 就是傳遞給函數的指令。&quot;,
+        wrong: &quot;程式碼邏輯有誤。在 OpenCV 中，品質設定需放在第三個參數的列表內。&quot;
+    },
+    {
+        title: &quot;PNG 壓縮參數的祕密&quot;,
+        q: &quot;在 OpenCV 實作中，PNG 的壓縮等級設定為 9 (最高級) 代表什麼？&quot;,
+        options: [
+            { text: &quot;畫質會變得非常模糊&quot;, isCorrect: false },
+            { text: &quot;電腦會花費更多運算時間來尋找更小的打包方式&quot;, isCorrect: true },
+            { text: &quot;圖片會自動縮放成 9 分之一的大小&quot;, isCorrect: false }
+        ],
+        success: &quot;沒錯！PNG 的等級控制的是「壓縮力道」，而非畫質損耗。&quot;,
+        wrong: &quot;觀念混淆囉。PNG 等級越高代表電腦花越多力氣去「打包」，但畫質依然是無損的。&quot;
+    },
+    {
+        title: &quot;檔案體積的量化&quot;,
+        q: &quot;在 Python 實作中，我們使用哪個函數來獲取影像檔案的大小？&quot;,
+        options: [
+            { text: &quot;cv2.imshow()&quot;, isCorrect: false },
+            { text: &quot;os.path.getsize()&quot;, isCorrect: true },
+            { text: &quot;random.randint()&quot;, isCorrect: false }
+        ],
+        success: &quot;正確！透過 `os.path.getsize()` 可以得到 Byte 單位的大小。&quot;,
+        wrong: &quot;錯囉。`os.path.getsize()` 才是用來量測磁碟檔案大小的工具。&quot;
+    },
+    {
+        title: &quot;JPG 品質與體積的關係&quot;,
+        q: &quot;關於實作中的畫質數值設定，下列敘述何者正確？&quot;,
+        options: [
+            { text: &quot;JPG 品質數值設得越小，存出來的檔案體積就越小&quot;, isCorrect: true },
+            { text: &quot;JPG 品質數值設得越小，存出來的檔案體積就越大&quot;, isCorrect: false },
+            { text: &quot;JPG 品質數值與檔案大小完全無關&quot;, isCorrect: false }
+        ],
+        success: &quot;賓果！犧牲品質（設小數值）是為了換取更小的儲存空間。&quot;,
+        wrong: &quot;再考慮一下。數值越小（品質越差），代表被丟掉的資料越多，檔案自然越小。&quot;
+    },
+    {
+        title: &quot;網路傳輸的策略&quot;,
+        q: &quot;如果是為了「遠端監控」或「快速預覽」的需求，最合適的影像處理策略是？&quot;,
+        options: [
+            { text: &quot;使用完全不壓縮的原始格式&quot;, isCorrect: false },
+            { text: &quot;使用 JPG 並調整至適當的壓縮畫質以利快速傳輸&quot;, isCorrect: true },
+            { text: &quot;強制使用 PNG 最高等級壓縮&quot;, isCorrect: false }
+        ],
+        success: &quot;正確！在網路流量有限的情況下，JPG 的高壓縮率非常有優勢。&quot;,
+        wrong: &quot;不夠理想。監控通常強調「快」，因此選擇適度壓縮的 JPG 是更好的權衡。&quot;
+    },
+    {
+        title: &quot;實作環境的色彩處理&quot;,
+        q: &quot;在實作程式碼中，為什麼顯示前要使用 `cv2.cvtColor(img, cv2.COLOR_BGR2RGB)`？&quot;,
+        options: [
+            { text: &quot;因為 OpenCV 預設是 BGR 順序，而顯示模組 (Matplotlib) 是 RGB&quot;, isCorrect: true },
+            { text: &quot;因為要把彩色圖片變黑白&quot;, isCorrect: false },
+            { text: &quot;因為要增加圖片的解析度&quot;, isCorrect: false }
+        ],
+        success: &quot;觀念正確！如果不轉換，顯示出來的圖片顏色會變得很詭異（紅藍相反）。&quot;,
+        wrong: &quot;再想想看。OpenCV 讀取的順序是 BGR，為了顯示正常，必須轉成 RGB。&quot;
     }
 ]&gt;&gt;
 
